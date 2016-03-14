@@ -40,4 +40,6 @@ for FROMHOSTNAME in $HOST_LIST
 do
 	ssh $FROMHOSTNAME "killall iperf" 2>/dev/null
 	ssh $FROMHOSTNAME 'for f in /tmp/iperf_*; do echo -n $(hostname -s)","; echo -n $f | grep -oP  "/tmp/iperf_\K(\S*)" | tr -d "\n"; echo -n ","; cat $f | grep -oh '\''[0-9\.]* [KMG]bits\/sec'\'' | grep -oh '\''[0-9\.]*'\''; done' 2>/dev/null
+        SUM=$(ssh $FROMHOSTNAME 'for f in /tmp/iperf_*; do BANDWIDTH=$(grep -hoP "([0-9]{1,12})\s(?=[KMG]bits/sec)" $f); SUM=$((SUM + BANDWIDTH));done;  printf "%d\n" $SUM ' 2>/dev/null)
+        printf 'Total %s %d\n' $FROMHOSTNAME $SUM
 done
